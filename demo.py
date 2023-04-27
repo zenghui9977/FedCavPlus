@@ -9,7 +9,7 @@ config = {
         'simulated': True
     },
     'server': {
-        'rounds': 20,
+        'rounds': 30,
         'clients_per_round': 10,
         'aggregation_rule': 'feddyn',
         'aggregation_detail': {

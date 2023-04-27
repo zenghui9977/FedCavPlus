@@ -102,7 +102,7 @@ class FedDynServer(BaseServer):
         else:
             logger.warning('No clients in this round')
             self.local_updates = None
-        return super().client_training()
+        return self.local_updates
 
 
     def aggregation(self):

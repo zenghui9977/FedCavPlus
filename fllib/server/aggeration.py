@@ -1,5 +1,4 @@
 import copy
-from re import L
 import numpy as np
 import torch
 
@@ -175,9 +174,25 @@ def Marginal_Median(local_updates):
     return aggregated_model_dict
 
     
-                
+def FedCav_Aggregation(local_updates):
+    local_models = [local_updates[i]['model'] for i in local_updates.keys()]
+    inference_loss = [local_updates[i]['inference_loss'] for i in local_updates.keys()]
 
+    # inference loss and then clip
+    clip_num = np.mean(inference_loss)
+    clipped_inference_loss = [min(i, clip_num) for i in inference_loss]
+    # TODO
 
+    aggregated_model_dict = mimic_blank_model(local_models[0]) 
+    client_num = len(local_updates)
+
+    with torch.no_grad():
+        for name, param in aggregated_model_dict.items():
+            for i in range(client_num):
+                param = param + torch.mul(local_models[i][name], inference_loss[i]) 
+            aggregated_model_dict[name] = param
+
+    return aggregated_model_dict            
 
 
 

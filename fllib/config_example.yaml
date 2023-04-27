@@ -1,6 +1,6 @@
 dataset:
   data_name: "cifar10" # options: 'mnist', 'fmnist', 'kmnist', 'emnist', 'cifar10', 'cifar100'
-  root: '../../Data'
+  root: 'F://Data'
   download: true
   simulated: false
   simulated_root: './simulated/'
