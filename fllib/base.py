@@ -16,6 +16,10 @@ from fllib.server.feddyn import FedDynServer
 from fllib.server.scaffold import ScaffoldServer
 from fllib.server.base import BaseServer
 from fllib.models.base import load_model
+
+from fllib.client.fedcav import FedCavClient
+from fllib.server.fedcav import FedCavServer
+
 from visdom import Visdom
 import numpy as np
 import torch
@@ -150,7 +154,18 @@ class BaseFL(object):
                                     current_round=current_round,
                                     records_save_filename=self.config.trial_name,
                                     vis=self.vis)
-
+        elif self.config.server.aggregation_rule == "fedcav":
+            logger.info('FedCav Server initialization.')
+            self.server = FedCavServer(config=self.config, 
+                                    clients=self.clients_id, 
+                                    client_class=self.client_class,
+                                    global_model=self.global_model,
+                                    fl_trainset=self.fl_dataset,
+                                    testset=self.testset_loader, 
+                                    device=self.device,
+                                    current_round=current_round,
+                                    records_save_filename=self.config.trial_name,
+                                    vis=self.vis)
         else:
             logger.info('Base Server initialization.')
             self.server = BaseServer(config=self.config, 
@@ -184,6 +199,9 @@ class BaseFL(object):
         elif self.config.server.aggregation_rule == 'feddyn':
             logger.info('FedDyn Clients initialization.')
             self.client_class = FedDynClient(config=self.config, device=self.device)
+        elif self.config.server.aggregation_rule == 'fedcav':
+            logger.info('FedCav Clients initialization.')
+            self.client_class = FedCavClient(config=self.config, device=self.device)
         else:
             logger.info('Base Clients initialization.')
             self.client_class = BaseClient(config=self.config, device=self.device)

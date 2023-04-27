@@ -1,6 +1,8 @@
 import copy
 import numpy as np
 import torch
+import torch.nn as nn
+
 
 
 def mimic_blank_model(model_proto):
@@ -181,7 +183,8 @@ def FedCav_Aggregation(local_updates):
     # inference loss and then clip
     clip_num = np.mean(inference_loss)
     clipped_inference_loss = [min(i, clip_num) for i in inference_loss]
-    # TODO
+
+    inference_loss_weight = torch.nn.functional.softmax(torch.Tensor(clipped_inference_loss), dim=0)
 
     aggregated_model_dict = mimic_blank_model(local_models[0]) 
     client_num = len(local_updates)
@@ -189,7 +192,7 @@ def FedCav_Aggregation(local_updates):
     with torch.no_grad():
         for name, param in aggregated_model_dict.items():
             for i in range(client_num):
-                param = param + torch.mul(local_models[i][name], inference_loss[i]) 
+                param = param + torch.mul(local_models[i][name], inference_loss_weight[i]) 
             aggregated_model_dict[name] = param
 
     return aggregated_model_dict            
